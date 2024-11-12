@@ -5,9 +5,13 @@ import com.xanxa.objectfight.game.LevelGenerator;
 import com.xanxa.objectfight.game.gameobject.Ball;
 import com.xanxa.objectfight.game.gameobject.Player;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.logging.Level;
@@ -28,6 +32,12 @@ public class JFrameFight extends JFrame {
     public JFrameFight() throws HeadlessException {
         super();
 
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Image cursorImage = toolkit.getImage("");
+        Point cursorHotSpot = new Point(0, 0);
+        Cursor invisibleCursor = toolkit.createCustomCursor(cursorImage, cursorHotSpot, "InvisibleCursor");
+        this.setCursor(invisibleCursor);
+        
         JPanel panel = new JPanel() {
 
             @Override
@@ -45,7 +55,8 @@ public class JFrameFight extends JFrame {
             }
 
             /**
-             * Chequea los Frames por segundo y en caso de necesitar llama a repaint o espera.
+             * Chequea los Frames por segundo y en caso de necesitar llama a
+             * repaint o espera.
              */
             public void checkFPSToRepaint() {
                 long actualTime = System.currentTimeMillis();
@@ -73,7 +84,8 @@ public class JFrameFight extends JFrame {
 
         panel.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent e) { }
+            public void keyTyped(KeyEvent e) {
+            }
 
             @Override
             public void keyPressed(KeyEvent e) {
@@ -105,6 +117,7 @@ public class JFrameFight extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setUndecorated(true);
         this.setVisible(true);
+
     }
 
     /**
@@ -119,17 +132,17 @@ public class JFrameFight extends JFrame {
         if (manager.getGameZone() == null) {
             // Establecer la zona de juego
             manager.setGameZone(new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight()));
-            panel.setBackground(Color.WHITE);
+            panel.setBackground(Color.BLACK);
 
             // Crear jugador
             double playerX = this.getWidth() / 2 - 100;
             double playerY = this.getHeight() - 150;
-            double playerWidth = 400;
+            double playerWidth = 300;
             double playerHeight = 20;
             Player player = new Player(playerX, playerY, playerWidth, playerHeight, Color.BLUE);
 
             // Crear pelota
-            Ball ball = new Ball(playerX + playerWidth / 2, playerY - 30, 20, 20, Color.RED);
+            Ball ball = new Ball(playerX + playerWidth / 2, playerY - 30, 20, 20, Color.WHITE);
 
             manager.addGameObject(player);
             manager.addGameObject(ball);

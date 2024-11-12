@@ -11,26 +11,29 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.SwingUtilities;
+import com.xanxa.objectfight.GameOver;
+
 
 public class GameManager {
+
     private List<GameObject> gameObjects;
     private int points = 0;
     private Rectangle gameZone;
     private double rightPushed = 0;
     private double leftPushed = 0;
-    private int playerLives = 3;
+    private int playerLives = 5;
     private int wallsNumber = 0;
     private int ballsNumber = 0;
     private static final int MAX_LEVEL = 5;
     private int currentLevel = 1;
     private boolean gameOver = false;
 
-    // Velocidades fijas para cada nivel
-    private static final double[] VELOCIDAD_BOLA = {0.3, 1.2, 1.5, 1.8, 2.0};
+    // Velocidades base ajustadas para cada nivel
+    private static final double[] VELOCIDAD_BOLA = {3.0, 5.0, 6.0, 7.0, 9.0};
 
-    // Coordenadas de inicio de la bola (en relación con el jugador)
-    private static final double BALL_INITIAL_X_OFFSET = 0.5;  // La bola se coloca en el centro del jugador
-    private static final double BALL_INITIAL_Y_OFFSET = -30;   // La bola se coloca encima del jugador
+    private static final double BALL_INITIAL_X_OFFSET = 0.5;
+    private static final double BALL_INITIAL_Y_OFFSET = -30;
 
     public GameManager() {
         this.gameObjects = new ArrayList<>();
@@ -44,7 +47,9 @@ public class GameManager {
     }
 
     public void fixedUpdate() {
-        if (gameOver) return;
+        if (gameOver) {
+            return;
+        }
 
         boolean isInside = true;
         List<Player> players = new ArrayList<>();
@@ -58,7 +63,7 @@ public class GameManager {
             boolean isInsideTmp = solveCollision(actual, collisions);
 
             if (!isInsideTmp) {
-                isInside = isInsideTmp;
+                isInside = false;
             }
 
             if (actual instanceof Player) {
@@ -93,48 +98,12 @@ public class GameManager {
                 if (gameObject instanceof Wall) {
                     Wall block = (Wall) gameObject;
                     block.touched();
-                    points += 10;
-
-                    // Preservar la magnitud de la velocidad al rebotar
-                    double velocidadActual = Math.sqrt(
-                            ball.getSpeedX() * ball.getSpeedX() +
-                                    ball.getSpeedY() * ball.getSpeedY()
-                    );
+                    // PUNTOS POR COLISION (5)
+                    points += 5;
                     ball.goAway(block);
-
-                    // Normalizar la nueva dirección para mantener la misma velocidad
-                    double nuevaVelocidad = Math.sqrt(
-                            ball.getSpeedX() * ball.getSpeedX() +
-                                    ball.getSpeedY() * ball.getSpeedY()
-                    );
-
-                    if (nuevaVelocidad > 0) {
-                        double factor = velocidadActual / nuevaVelocidad;
-                        ball.setSpeedX(ball.getSpeedX() * factor);
-                        ball.setSpeedY(ball.getSpeedY() * factor);
-                    }
-
                 } else if (gameObject instanceof Player) {
                     Player player = (Player) gameObject;
-                    if (ball.goAway(player)) {
-                        // Preservar la magnitud de la velocidad
-                        double velocidadActual = Math.sqrt(
-                                ball.getSpeedX() * ball.getSpeedX() +
-                                        ball.getSpeedY() * ball.getSpeedY()
-                        );
-
-                        // Después de que la bola rebote
-                        double nuevaVelocidad = Math.sqrt(
-                                ball.getSpeedX() * ball.getSpeedX() +
-                                        ball.getSpeedY() * ball.getSpeedY()
-                        );
-
-                        if (nuevaVelocidad > 0) {
-                            double factor = velocidadActual / nuevaVelocidad;
-                            ball.setSpeedX(ball.getSpeedX() * factor);
-                            ball.setSpeedY(ball.getSpeedY() * factor);
-                        }
-                    }
+                    ball.goAway(player);
                 }
             }
             inside = checkBallInside(ball);
@@ -146,6 +115,10 @@ public class GameManager {
         boolean isInside = true;
         if (!gameZone.contains(ball.getCollider().getRectangle())) {
             Point2D ballLeft = ball.getLeft();
+            double velocidadInicial = Math.sqrt(
+                    ball.getSpeedX() * ball.getSpeedX()
+                    + ball.getSpeedY() * ball.getSpeedY()
+            );
 
             if (ballLeft.getX() < 0) {
                 double ballSpeed = ball.getSpeedX();
@@ -166,44 +139,54 @@ public class GameManager {
                 ball.setAlive(false);
                 isInside = false;
             }
+
+            // Normalizamos la velocidad después de rebotar en los bordes
+            double velocidadActual = Math.sqrt(
+                    ball.getSpeedX() * ball.getSpeedX()
+                    + ball.getSpeedY() * ball.getSpeedY()
+            );
+
+            if (velocidadActual > 0 && isInside) {
+                double factor = velocidadInicial / velocidadActual;
+                ball.setSpeedX(ball.getSpeedX() * factor);
+                ball.setSpeedY(ball.getSpeedY() * factor);
+            }
         }
         return isInside;
     }
 
     private void handleBallLost() {
-        playerLives--;
-        if (playerLives <= 0) {
-            gameOver = true;
-            return;
-        }
-        resetBall();
+    playerLives--;
+    if (playerLives <= 0) {
+        gameOver = true;
+        
+        int puntosFinales = points;
+
+        // Iniciar la ventana GameOver en el hilo de eventos de Swing
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new GameOver(puntosFinales).setVisible(true);
+            }
+        });
+
+        return;
     }
+    resetBall();
+}
+
 
     private void resetBall() {
-        // Remover todas las bolas excepto una
         removeExtraBalls();
 
         for (GameObject obj : gameObjects) {
             if (obj instanceof Player) {
                 Player player = (Player) obj;
 
-                // Colocamos la bola en el mismo lugar en relación con el jugador
                 double ballX = player.getX() + player.getWidth() * BALL_INITIAL_X_OFFSET;
                 double ballY = player.getY() + BALL_INITIAL_Y_OFFSET;
 
-                Ball newBall = new Ball(ballX, ballY, 20, 20, Color.RED);
-
-                // Calculamos la velocidad base para este nivel
-                double velocidadBase = VELOCIDAD_BOLA[currentLevel - 1];
-
-                // Aplicamos un vector de velocidad normalizado
-                double velocidadTotal = 8.0; // Magnitud total del vector de velocidad
-                double angle = Math.PI / 4; // 45 grados en radianes
-
-                // Calculamos las componentes X e Y manteniendo la proporción
-                newBall.setSpeedX(velocidadTotal * velocidadBase * Math.cos(angle));
-                newBall.setSpeedY(-velocidadTotal * velocidadBase * Math.sin(angle));
-
+                Ball newBall = new Ball(ballX, ballY, 20, 20, Color.BLACK);
                 gameObjects.add(newBall);
                 break;
             }
@@ -211,18 +194,7 @@ public class GameManager {
     }
 
     private void removeExtraBalls() {
-        int ballCount = 0;
-        // Iteramos sobre los objetos de juego y contamos las bolas
-        for (int i = gameObjects.size() - 1; i >= 0; i--) {
-            GameObject obj = gameObjects.get(i);
-            if (obj instanceof Ball) {
-                ballCount++;
-                // Si hay más de una bola, la eliminamos
-                if (ballCount > 1) {
-                    gameObjects.remove(i);
-                }
-            }
-        }
+        gameObjects.removeIf(obj -> obj instanceof Ball);
     }
 
     private void nextLevel() {
@@ -232,10 +204,9 @@ public class GameManager {
             return;
         }
 
-        // Limpiar objetos y reiniciar el nivel
         gameObjects.removeIf(obj -> obj instanceof Wall);
         LevelGenerator.generateLevel(this, currentLevel);
-        resetBall(); // Reiniciar la bola con la velocidad fija del nivel
+        resetBall();
     }
 
     // Getters y setters

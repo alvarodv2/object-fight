@@ -9,12 +9,12 @@ import java.awt.Graphics;
 public class Ball extends GameObject {
     private Color color;
     private boolean alive = true;
-    private double speedX = -1, speedY = -1; // Velocidades iniciales
-    private double acceleration = 0.01; // Aceleración de la bola
+    private double speedX = -1, speedY = -1; 
+    private double acceleration = 0.01; 
 
     public Ball(double x, double y, double width, double height, Color color) {
         super(x, y, width, height);
-        this.color = color;
+        this.color = Color.WHITE;
         this.speedX = 5.0;
         this.speedY = -8.0;
     }
@@ -36,13 +36,12 @@ public class Ball extends GameObject {
     @Override
     public boolean behaviour() {
         boolean result = super.behaviour();
-        // Incrementar la velocidad de la bola
         speedX += acceleration;
         speedY += acceleration;
         double x = getX();
         double y = getY();
-        x += speedX; // Actualizar la posición X según la velocidad
-        y += speedY; // Actualizar la posición Y según la velocidad
+        x += speedX; 
+        y += speedY; 
         updatePosition(x, y);
         return result;
     }

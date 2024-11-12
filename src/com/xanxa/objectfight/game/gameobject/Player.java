@@ -10,7 +10,6 @@ import java.awt.Toolkit;
  */
 public class Player extends GameObject {
     private Color color;
-    private Color borderColor;
     private double speedX = 0;
     private double accelerationX = 0.3;
     private int lessLife = 50;
@@ -19,7 +18,7 @@ public class Player extends GameObject {
     public Player(double x, double y, double width, double height, Color color) {
         super(x, y, width, height);
         this.color = color;
-        this.borderColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 150);
+   
     }
 
     @Override
@@ -31,8 +30,6 @@ public class Player extends GameObject {
         double width = getWidth();
         double height = getHeight();
         g.fillRect((int) x, (int) y, (int) width, (int) height);
-        g.setColor(borderColor);
-        g.drawRect((int) x, (int) y, (int) width, (int) height);
         g.setColor(tmpColor);
         super.paint(g);
         return true;

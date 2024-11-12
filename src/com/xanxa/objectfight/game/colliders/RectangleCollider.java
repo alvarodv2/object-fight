@@ -74,8 +74,11 @@ public class RectangleCollider implements Collider {
 
     @Override
     public void paintDebug(Graphics g) {
+        // Eliminamos para evitar el borde rojo
+        /*
         g.setColor(debugColor);
         g.drawRect((int) x, (int) y, (int) width, (int) height);
+        */
     }
 
     @Override
