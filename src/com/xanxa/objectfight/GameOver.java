@@ -7,11 +7,11 @@ import java.awt.event.*;
 
 public class GameOver extends JFrame {
 
-    public GameOver(int puntos) { // Acepta la puntuación como parámetro
+    public GameOver(int puntos) { 
         setUndecorated(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        BackgroundPanel backgroundPanel = new BackgroundPanel(); // Panel de fondo negro
+        BackgroundPanel backgroundPanel = new BackgroundPanel(); 
         backgroundPanel.setLayout(new GridBagLayout());
 
         JLabel titleLabel = new JLabel("<html><span style='color:white;'>BRICK </span><span style='color:yellow;'>BREAKER</span></html>");
@@ -100,7 +100,7 @@ public class GameOver extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                // Suponiendo que tienes una puntuación de ejemplo para pasar
+                
                 int ejemploPuntos = 100; 
                 new GameOver(ejemploPuntos).setVisible(true);
             }

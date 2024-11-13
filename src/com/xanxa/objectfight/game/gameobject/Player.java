@@ -43,8 +43,7 @@ public class Player extends GameObject {
         int screenWidth = (int) screenSize.getWidth();
 
         double newX = getX() + speedX;
-
-        // Asegurar que el jugador no salga de los límites de la pantalla
+        
         if (newX < 0) {
             newX = 0;
         } else if (newX + getWidth() > screenWidth) {
@@ -57,7 +56,7 @@ public class Player extends GameObject {
 
     @Override
     public boolean isAlive() {
-        return color.getAlpha() > 0; // El jugador "muere" cuando el alpha es 0
+        return color.getAlpha() > 0; 
     }
 
     /**
@@ -78,13 +77,12 @@ public class Player extends GameObject {
                 speedX = -maxSpeed;
             }
         } else {
-            // Desaceleración gradual cuando no hay entrada
             if (speedX > 0) {
                 speedX -= accelerationX;
-                if (speedX < 0) speedX = 0; // Asegura que no pase a negativo
+                if (speedX < 0) speedX = 0; 
             } else if (speedX < 0) {
                 speedX += accelerationX;
-                if (speedX > 0) speedX = 0; // Asegura que no pase a positivo
+                if (speedX > 0) speedX = 0; 
             }
         }
     }

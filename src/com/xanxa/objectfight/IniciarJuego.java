@@ -9,9 +9,8 @@ public class IniciarJuego extends JFrame {
 
     public IniciarJuego() {
         setUndecorated(true); 
-        setExtendedState(JFrame.MAXIMIZED_BOTH); 
-
-        // Cargar el panel de fondo con la ruta de la imagen
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        
         BackgroundPanel backgroundPanel = new BackgroundPanel("img/brickBreaker.jpg");
         backgroundPanel.setLayout(new GridBagLayout()); 
 
@@ -31,11 +30,11 @@ public class IniciarJuego extends JFrame {
 
         playButton.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
-                playButton.setForeground(Color.GREEN); // Color al pasar el mouse
+                playButton.setForeground(Color.GREEN); 
             }
 
             public void mouseExited(MouseEvent evt) {
-                playButton.setForeground(Color.RED); // Color al salir el mouse
+                playButton.setForeground(Color.RED); 
             }
         });
 
@@ -47,16 +46,15 @@ public class IniciarJuego extends JFrame {
                 dispose(); 
             }
         });
-
-        // Agregar el botón al panel con el borde
+        
         buttonPanel.add(playButton, BorderLayout.CENTER);
 
-        // Establecer las restricciones de GridBagLayout para ubicar el botón
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(-120, 0, 0, 0); // Espaciado del botón
-        backgroundPanel.add(buttonPanel, gbc); // Añadir el panel con borde al fondo
+        gbc.insets = new Insets(-120, 0, 0, 0); 
+        backgroundPanel.add(buttonPanel, gbc); 
 
         setContentPane(backgroundPanel);
         setVisible(true);

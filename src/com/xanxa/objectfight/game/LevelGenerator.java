@@ -68,32 +68,39 @@ public class LevelGenerator {
     }
 
     private static void generateRandomLevel(GameManager gameManager, int level) {
+        int rows = Math.min(3 + level, 8);
+        int wallsPerRow = 8;
         int wallWidth = 60;
         int wallHeight = 20;
-        int totalWalls = 40 + (level * 8);
-        Random random = new Random();
+        int spacing = 10;
+        int resistance = Math.min(1 + (level / 2), 5);
+        Color wallColor = getColorByResistance(resistance);
 
-        // Coordenadas y dimensiones del jugador
-        double playerX = gameManager.getGameZone().getWidth() / 2 - 100;
-        double playerY = gameManager.getGameZone().getHeight() - 150;
-        double playerWidth = 200;
-        double playerHeight = 20;
+        // Posición inicial del primer bloque de paredes
+        int startX1 = (gameManager.getGameZone().width / 4) - (wallsPerRow * (wallWidth + spacing) / 2);
+        int startY1 = 50;
 
-        for (int i = 0; i < totalWalls; i++) {
-            int x;
-            int y;
+        // Posición inicial del segundo bloque de paredes
+        int startX2 = (3 * gameManager.getGameZone().width / 4) - (wallsPerRow * (wallWidth + spacing) / 2);
+        int startY2 = 50;
 
-            // Asegurarse de que los muros no se generen en el área del jugador
-            do {
-                x = random.nextInt((int) gameManager.getGameZone().getWidth() - wallWidth);
-                y = random.nextInt((int) gameManager.getGameZone().getHeight() - wallHeight - 100) + 100;
-            } while (x + wallWidth > playerX && x < playerX + playerWidth
-                    && y + wallHeight > playerY && y < playerY + playerHeight);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < wallsPerRow; col++) {
+                int x = startX1 + col * (wallWidth + spacing);
+                int y = startY1 + row * (wallHeight + spacing);
+                Wall wall = new Wall(x, y, wallWidth, wallHeight, resistance, wallColor);
+                gameManager.addGameObject(wall);
+            }
+        }
 
-            int resistance = Math.min(1 + (level / 2), 5);
-            Color wallColor = getColorByResistance(resistance);
-            Wall wall = new Wall(x, y, wallWidth, wallHeight, resistance, wallColor);
-            gameManager.addGameObject(wall);
+        // Creamos el segundo bloque de paredes
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < wallsPerRow; col++) {
+                int x = startX2 + col * (wallWidth + spacing);
+                int y = startY2 + row * (wallHeight + spacing);
+                Wall wall = new Wall(x, y, wallWidth, wallHeight, resistance, wallColor);
+                gameManager.addGameObject(wall);
+            }
         }
     }
 

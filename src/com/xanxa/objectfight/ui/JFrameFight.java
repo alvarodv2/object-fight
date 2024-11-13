@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 public class JFrameFight extends JFrame {
 
     private final double FPMILLIS = 60.0 / 1000.0; // 60fps
-    private final double TIME_DIFF_STANDARD = 1 / FPMILLIS; // Valor constante
+    private final double TIME_DIFF_STANDARD = 1 / FPMILLIS; 
     private long lastUpdateTime = 0;
     private GameManager manager;
 
@@ -146,8 +146,7 @@ public class JFrameFight extends JFrame {
 
             manager.addGameObject(player);
             manager.addGameObject(ball);
-
-            // Generar nivel inicial
+            
             LevelGenerator.generateLevel(manager, 1);
         }
     }

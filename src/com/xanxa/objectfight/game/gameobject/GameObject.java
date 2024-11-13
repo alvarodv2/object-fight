@@ -66,9 +66,7 @@ public abstract class GameObject{
 
     public boolean collides (GameObject checkCollision)
     {
-        //TODO BUG hay que ver porqué el rectangle de ball vale 500 en vez de 212
-        //Ball x = 212.0 y = 100.0   checkCollision x = 100 y = 100
-        //ball [500, 100, 20, 20] checkCollision --> [100, 100, 120, 130]
+       
         boolean collides = this.col.collide(checkCollision.getCollider());
 
         return collides;
